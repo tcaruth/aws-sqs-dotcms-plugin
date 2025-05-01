@@ -1,3 +1,10 @@
+# MacOS
+.DS_Store
+
+# Built files
+target/*
+
+
 # Compiled class file
 *.class
 
