@@ -6,6 +6,8 @@ A dotCMS plugin that adds a workflow actionlet to send messages to Amazon SQS (S
 
 ## How to build this example
 
+Edit `SqsMessageSenderActionlet.java` to replace the AWS credentials with your own.
+
 To build the JAR, run the following Maven command: 
 ```sh
 mvn clean install

@@ -1,5 +1,6 @@
 package com.dotcms.plugin.sqs;
 
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import com.dotmarketing.portlets.workflows.actionlet.WorkFlowActionlet;
 import com.dotmarketing.portlets.workflows.model.WorkflowActionClassParameter;
 import com.dotmarketing.portlets.workflows.model.WorkflowActionFailureException;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 // AWS SQS Imports
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -28,19 +31,19 @@ public class SqsMessageSenderActionlet extends WorkFlowActionlet {
     @Override
     public List<WorkflowActionletParameter> getParameters() {
         List<WorkflowActionletParameter> params = new ArrayList<>();
-        
-        params.add(new WorkflowActionletParameter("queueUrl", "Queue URL", 
-            "The complete URL of the SQS queue", true));  
-            
-        params.add(new WorkflowActionletParameter("messageBody", "Message Body", 
+
+        params.add(new WorkflowActionletParameter("queueUrl", "Queue URL",
+            "The complete URL of the SQS queue", true));
+
+        params.add(new WorkflowActionletParameter("messageBody", "Message Body",
             "The content of the message to send. You can use velocity variables like $content.title", true));
-            
-        params.add(new WorkflowActionletParameter("awsRegion", "AWS Region", 
+
+        params.add(new WorkflowActionletParameter("awsRegion", "AWS Region",
             "The AWS region where the queue is located (e.g., us-east-1)", true));
-            
-        params.add(new WorkflowActionletParameter("delaySeconds", "Delay Seconds", 
+
+        params.add(new WorkflowActionletParameter("delaySeconds", "Delay Seconds",
             "The number of seconds to delay the message (0-900). Default is 0.", false));
-            
+
         return params;
     }
 
@@ -61,12 +64,12 @@ public class SqsMessageSenderActionlet extends WorkFlowActionlet {
             String queueUrl = params.get("queueUrl").getValue();
             String messageBody = params.get("messageBody").getValue();
             String awsRegion = params.get("awsRegion").getValue();
-            
+
             // Process velocity variables in the message body if present
             if (messageBody != null && messageBody.contains("$")) {
                 messageBody = processor.getContentlet().getMap().toString();
             }
-            
+
             // Get optional delay seconds parameter
             int delaySeconds = 0;
             try {
@@ -80,25 +83,31 @@ public class SqsMessageSenderActionlet extends WorkFlowActionlet {
             } catch (NumberFormatException e) {
                 Logger.warn(this, "Invalid delay seconds value: " + params.get("delaySeconds").getValue() + ". Using default value 0.");
             }
-            
+
             // Initialize SQS client
             Region region = Region.of(awsRegion);
+            // TODO replace with Josten's credentials
+            // Move to environment variables or configuration properties
+            AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(
+                AwsBasicCredentials.create("YOUR_ACCESS_KEY", "YOUR_SECRET_KEY")
+            );
             SqsClient sqsClient = SqsClient.builder()
                 .region(region)
+                .credentialsProvider(credentialsProvider)
                 .build();
-                
+
             // Create send message request
             SendMessageRequest sendMsgRequest = SendMessageRequest.builder()
                 .queueUrl(queueUrl)
                 .messageBody(messageBody)
                 .delaySeconds(delaySeconds)
                 .build();
-                
+
             // Send message to SQS queue
             SendMessageResponse response = sqsClient.sendMessage(sendMsgRequest);
-            
+
             Logger.info(this, "Message sent to SQS queue. MessageId: " + response.messageId());
-            
+
         } catch (SqsException e) {
             Logger.error(this, "Error sending message to SQS: " + e.getMessage(), e);
             throw new WorkflowActionFailureException("Failed to send message to SQS: " + e.getMessage());
