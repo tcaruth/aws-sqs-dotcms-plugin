@@ -5,7 +5,7 @@
 
     <groupId>com.dotcms</groupId>
     <artifactId>aws-sqs-plugin</artifactId>
-    <version>0.3</version>
+    <version>0.4.2</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -43,6 +43,18 @@
             <artifactId>regions</artifactId>
             <version>2.20.135</version>
         </dependency>
+        
+        <!-- SLF4J dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.36</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -59,6 +71,17 @@
                         <Bundle-DocURL>https://dotcms.com/</Bundle-DocURL>
                         <Bundle-Activator>com.dotcms.plugin.sqs.Activator</Bundle-Activator>
                         <Import-Package>
+                            org.apache.logging.log4j,
+                            org.apache.logging.log4j.core,
+                            org.apache.logging.log4j.core.config,
+                            org.apache.logging.log4j.spi,
+                            org.slf4j,
+                            org.slf4j.impl,
+                            org.slf4j.spi,
+                            org.slf4j.helpers,
+                            org.apache.log4j,
+                            org.apache.log4j.spi,
+                            org.apache.log4j.helpers,
                             *;resolution:=optional
                         </Import-Package>
                         <Export-Package>com.dotcms.plugin.sqs</Export-Package>

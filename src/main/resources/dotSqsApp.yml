@@ -1,0 +1,21 @@
+---
+name: "AWS SQS Credentials App"
+description: "This app collects AWS credentials for use in the AWS SQS Workflow plugin"
+iconUrl: "https://avatars3.githubusercontent.com/u/1005263?s=400&u=dd87be9aba0f44feb1b82cab52a5b7fffe5119e3&v=4"
+allowExtraParameters: false
+params:
+  awsAccessKey:
+    label: "Access Key"
+    value: ""
+    hidden: false
+    type: "STRING"
+    hint: "AWS Access Key"
+    required: true
+
+  awsSecretKey:
+    label: "Secret Key"
+    value: ""
+    hidden: true
+    type: "STRING"
+    hint: "AWS Secret Key"
+    required: true
