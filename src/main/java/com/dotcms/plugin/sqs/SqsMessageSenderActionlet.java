@@ -43,7 +43,7 @@ public class SqsMessageSenderActionlet extends WorkFlowActionlet {
             "The complete URL of the SQS queue", true));
 
         params.add(new WorkflowActionletParameter("messageBody", "Message Body",
-            "The content of the message to send. Leave empty to use the standard payload.", true));
+            "The content of the message to send. Leave empty to use the standard payload.", false));
 
         params.add(new WorkflowActionletParameter("awsRegion", "AWS Region", "eu-north-1", true));
 
@@ -89,10 +89,10 @@ public class SqsMessageSenderActionlet extends WorkFlowActionlet {
 
                 // Do not send test.conf, instead throw an error
                 // It is a business decision what to do with test files. This is an example only.
-                if (messageBody.contains("fileName=test.conf")) {
+                if (standardPayload.contains("fileName=test.conf")) {
                     throw new WorkflowActionFailureException("File name contains 'test' in the filename: " + messageBody);
                 }
-        
+
                 // Get optional delay seconds parameter
                 try {
                     if (params.get("delaySeconds") != null && params.get("delaySeconds").getValue() != null) {
